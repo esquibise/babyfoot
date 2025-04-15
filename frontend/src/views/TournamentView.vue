@@ -210,7 +210,7 @@ const updateScore = async (match) => {
   loadingStates[matchId] = true;
   const scoreData = scoresInput[matchId];
 
-  // Vérification simple que les scores sont des nombres
+  
   if (scoreData.score1 === '' || scoreData.score2 === '' || isNaN(Number(scoreData.score1)) || isNaN(Number(scoreData.score2))) {
       console.error(`Scores invalides pour match ${matchId}:`, scoreData);
       loadingStates[matchId] = false;
@@ -235,7 +235,7 @@ const updateScore = async (match) => {
     // Mettre à jour le match dans le state local
     match.scoreTeam1 = data.match.scoreTeam1;
     match.scoreTeam2 = data.match.scoreTeam2;
-    editStates[matchId] = false; // Sortir du mode édition
+    editStates[matchId] = false; 
     await fetchRanking();
 
   } catch (err) {
@@ -257,7 +257,7 @@ const fetchRanking = async () => {
             const errorData = await res.json().catch(() => ({}));
             throw new Error(errorData.error || 'Erreur lors de la récupération du classement.');
         }
-        rankingData.value = await res.json(); // Le backend renvoie directement le tableau
+        rankingData.value = await res.json(); 
     } catch (err) {
         console.error('Erreur de récupération du classement:', err);
     } finally {
@@ -272,9 +272,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.tournament-title {
-    /* Hérite de .view-title, pas besoin de plus pour l'instant */
-}
+
 
 .tournament-date,
 .tournament-description {

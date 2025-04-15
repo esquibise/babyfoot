@@ -9,35 +9,35 @@
         <button type="submit" class="btn btn-submit btn-secondary" :disabled="!tournamentId">Ajouter l'équipe</button>
         <p v-if="!tournamentId" class="error-message">ID du tournoi manquant.</p>
       </form>
-       <!-- Ajouter des messages de succès/erreur ici -->
+       
        <p v-if="errorMsg && !tournamentId" class="error-message">{{ errorMsg }}</p>
     </div>
   </template>
   
   <script setup>
   import { ref, defineProps } from 'vue';
-  import { useRouter } from 'vue-router'; // Importer pour la redirection
+  import { useRouter } from 'vue-router'; 
   
-  // Récupérer l'ID du tournoi passé en prop par le routeur
+
   const props = defineProps({
-    id: { // Doit correspondre au nom du paramètre dans la route (:id)
+    id: { 
       type: [String, Number],
       required: true
     }
   });
   
   const teamName = ref('');
-  const tournamentId = ref(props.id); // Utiliser la prop
+  const tournamentId = ref(props.id); 
   const successMsg = ref('');
   const errorMsg = ref('');
-  const router = useRouter(); // Initialiser le routeur
+  const router = useRouter(); 
   
   const addTeam = async () => {
     if (!tournamentId.value) {
         errorMsg.value = "ID du tournoi non spécifié.";
         return;
     }
-    if (!teamName.value.trim()) { // Validation simple du nom
+    if (!teamName.value.trim()) { 
         console.error("Le nom de l'équipe ne peut pas être vide.");
         return;
     }
@@ -51,32 +51,30 @@
     
         const data = await res.json();
         if (!res.ok) {
-            // Essayer d'extraire un message d'erreur plus précis du backend
+            
             throw new Error(data.error || `Erreur ${res.status} lors de l'ajout.`);
         }
         
         successMsg.value = `Équipe "${teamName.value.trim()}" ajoutée avec succès !`;
-        teamName.value = ''; // Vider le champ
-        
+        teamName.value = ''; 
+
         setTimeout(() => {
            router.push({ name: 'TournamentView', params: { id: tournamentId.value } });
         }, 1500);
 
     } catch (error) {
         console.error("Error adding team:", error);
-        // Afficher l'erreur dans le message dédié
+        
     }
   };
   </script>
 
 <style scoped>
-/* Retirer .form-container et .form-title */
-/* Affiner titre spécifique */
-.form-title {
-    font-size: 1.9rem; /* Ajuster taille pour H2 */
-}
 
-/* Garder styles formulaire spécifiques */
+.form-title {
+    font-size: 1.9rem; 
+
+
 .team-form {
   display: flex;
   flex-direction: column;
@@ -112,15 +110,13 @@
   transform: scale(1.0);
 }
 
-/* Styles spécifiques bouton */
 .btn-secondary {
-  background-color: #1976d2; /* Bleu */
+  background-color: #1976d2; 
   color: white;
 }
 .btn-secondary:hover {
   background-color: #1565c0;
 }
 
-/* Styles pour success-message et error-message supprimés si plus utilisés explicitement */
 
 </style>

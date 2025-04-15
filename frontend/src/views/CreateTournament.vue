@@ -20,7 +20,7 @@
         <button type="submit" class="btn btn-submit btn-primary">Créer</button>
       </form>
   
-      <!-- Messages de succès/erreur supprimés de l'UI -->
+     
     </div>
   </template>
   
@@ -51,17 +51,17 @@
       }
   
       const data = await res.json();
-      name.value = ''; // Clear form
+      name.value = ''; 
       date.value = '';
       description.value = '';
   
-      // Optionnel : redirection vers l'accueil après 1.5s
+     
       setTimeout(() => {
         router.push('/');
       }, 1500);
     } catch (err) {
       console.error("Submit error:", err);
-      // L'erreur est logguée, mais pas affichée directement à l'utilisateur
+     
     }
   };
   </script>
@@ -70,7 +70,7 @@
 .tournament-form {
   display: flex;
   flex-direction: column;
-  gap: 25px; /* Plus d'espace */
+  gap: 25px; 
 }
 
 .form-group {
@@ -87,7 +87,7 @@
 
 .form-input,
 .form-textarea {
-  padding: 12px 15px; /* Plus de padding */
+  padding: 12px 15px; 
   border: 1px solid #d0d0d0;
   border-radius: 6px;
   background-color: #fdfdfd;
@@ -101,10 +101,10 @@
   border-color: #4caf50;
   box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
   background-color: #fff;
-  transform: scale(1.0); /* Pas de scale ici, peut-être gênant */
+  transform: scale(1.0); 
 }
 
-/* Style de base pour les boutons (partagé potentiel) */
+
 .btn {
   display: inline-block;
   padding: 12px 25px;
@@ -124,18 +124,18 @@
 }
 
 .btn-submit {
-  background-color: #d32f2f; /* Bouton ROUGE */
+  background-color: #d32f2f; 
   color: white;
-  align-self: center; /* Centrer le bouton */
+  align-self: center; 
   margin-top: 10px;
 }
 
 .btn-submit:hover {
-  background-color: #b71c1c; /* Rouge plus foncé */
+  background-color: #b71c1c; 
 }
 
 .btn-primary {
-  background-color: #d32f2f; /* Rouge */
+  background-color: #d32f2f; 
   color: white;
 }
 

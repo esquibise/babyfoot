@@ -15,7 +15,7 @@
   
   <script setup>
   import { ref, onMounted } from 'vue';
-  import { RouterLink } from 'vue-router'; // Assurez-vous que RouterLink est importé si nécessaire
+  import { RouterLink } from 'vue-router'; 
 
   const tournaments = ref([]);
   
@@ -30,7 +30,7 @@
       tournaments.value = await response.json();
     } catch (error) {
       console.error("Failed to fetch tournaments:", error);
-      // Gérer l'erreur, par exemple afficher un message à l'utilisateur
+
     }
   });
   </script>
@@ -39,20 +39,20 @@
 ul {
   list-style: none;
   padding: 0;
-  margin: 0 0 30px 0; /* Ajouter marge en bas */
+  margin: 0 0 30px 0; 
   display: flex;
   flex-direction: column;
-  gap: 12px; /* Espace un peu plus grand */
+  gap: 12px; 
 }
 
-.list-item { /* Renommé pour clarté */
+.list-item { 
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 18px 25px;
-  background-color: #ffffff; /* Blanc pour contraster avec le fond global */
+  background-color: #ffffff; 
   border: 1px solid #e0e0e0;
-  border-left: 5px solid #66bb6a; /* Bordure verte plus épaisse */
+  border-left: 5px solid #66bb6a; 
   border-radius: 8px;
   transition: all 0.25s ease;
   position: relative;
@@ -61,9 +61,9 @@ ul {
 }
 
 .list-item:hover {
-  border-left-color: #2e7d32; /* Vert foncé au survol */
+  border-left-color: #2e7d32; 
   background-color: #f9f9f9;
-  transform: scale(1.02); /* Effet zoom léger */
+  transform: scale(1.02); 
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
@@ -73,7 +73,7 @@ ul {
 }
 
 .view-link {
-  color: #1565c0; /* Bleu joueur */
+  color: #1565c0; 
   background-color: #e3f2fd;
   text-decoration: none;
   font-weight: 600;
@@ -84,7 +84,7 @@ ul {
 }
 
 .view-link:hover {
-  background-color: #1976d2; /* Bleu plus foncé */
+  background-color: #1976d2; 
   color: white;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   border-color: #1976d2;
@@ -95,9 +95,8 @@ ul {
   text-align: center;
 }
 
-/* Spécificité bouton primaire ici */
 .btn-primary {
-  background-color: #d32f2f; /* Rouge joueur */
+  background-color: #d32f2f; 
   color: white;
 }
 
