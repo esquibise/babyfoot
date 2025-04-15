@@ -5,8 +5,8 @@ function calculateRanking(teams, completedMatches) {
         return [];
     }
 
-    // Initialiser le tableau de classement
-    const ranking = teams.map(team => ({
+    // Initialiser le tableau de classement pour chaque équipe avec des statistiques à zéro.
+    const initialRanking = teams.map(team => ({
         name: team.name,
         points: 0,
         played: 0,
@@ -18,47 +18,55 @@ function calculateRanking(teams, completedMatches) {
         goalDifference: 0
     }));
 
-    // Calculer les points et statistiques
+    // Parcourir chaque match terminé pour mettre à jour les statistiques des équipes concernées.
     completedMatches.forEach(match => {
-        const team1Ranking = ranking.find(r => r.name === match.team1);
-        const team2Ranking = ranking.find(r => r.name === match.team2);
+        // Trouver les entrées correspondantes dans le classement pour les deux équipes du match.
+        const team1Stats = initialRanking.find(rankEntry => rankEntry.name === match.team1);
+        const team2Stats = initialRanking.find(rankEntry => rankEntry.name === match.team2);
 
-        if (team1Ranking && team2Ranking) {
-            team1Ranking.played++;
-            team2Ranking.played++;
-            team1Ranking.goalsFor += match.scoreTeam1;
-            team1Ranking.goalsAgainst += match.scoreTeam2;
-            team2Ranking.goalsFor += match.scoreTeam2;
-            team2Ranking.goalsAgainst += match.scoreTeam1;
-            team1Ranking.goalDifference = team1Ranking.goalsFor - team1Ranking.goalsAgainst;
-            team2Ranking.goalDifference = team2Ranking.goalsFor - team2Ranking.goalsAgainst;
+        // S'assurer que les deux équipes existent dans notre classement avant de continuer.
+        if (team1Stats && team2Stats) {
+            team1Stats.played++;
+            team2Stats.played++;
+            team1Stats.goalsFor += match.scoreTeam1;
+            team1Stats.goalsAgainst += match.scoreTeam2;
+            team2Stats.goalsFor += match.scoreTeam2;
+            team2Stats.goalsAgainst += match.scoreTeam1;
+            team1Stats.goalDifference = team1Stats.goalsFor - team1Stats.goalsAgainst;
+            team2Stats.goalDifference = team2Stats.goalsFor - team2Stats.goalsAgainst;
 
-            if (match.scoreTeam1 > match.scoreTeam2) {
-                team1Ranking.points += 3;
-                team1Ranking.wins++;
-                team2Ranking.losses++;
-            } else if (match.scoreTeam1 < match.scoreTeam2) {
-                team2Ranking.points += 3;
-                team2Ranking.wins++;
-                team1Ranking.losses++;
-            } else {
-                team1Ranking.points += 1;
-                team2Ranking.points += 1;
-                team1Ranking.draws++;
-                team2Ranking.draws++;
+            // Attribuer les points en fonction du résultat du match (3 pour victoire, 1 pour nul, 0 pour défaite).
+            if (match.scoreTeam1 > match.scoreTeam2) { // Victoire équipe 1
+                team1Stats.points += 3;
+                team1Stats.wins++;
+                team2Stats.losses++;
+            } else if (match.scoreTeam1 < match.scoreTeam2) { // Victoire équipe 2
+                team2Stats.points += 3;
+                team2Stats.wins++;
+                team1Stats.losses++;
+            } else { // Match nul
+                team1Stats.points += 1;
+                team2Stats.points += 1;
+                team1Stats.draws++;
+                team2Stats.draws++;
             }
         }
     });
 
-    // Trier le classement
-    ranking.sort((a, b) => {
-        if (b.points !== a.points) return b.points - a.points;
-        if (b.goalDifference !== a.goalDifference) return b.goalDifference - a.goalDifference;
-        if (b.goalsFor !== a.goalsFor) return b.goalsFor - a.goalsFor;
-        return a.name.localeCompare(b.name);
+    // Trier le classement final selon les critères usuels :
+    // 1. Points (décroissant)
+    // 2. Différence de buts (décroissant)
+    // 3. Buts marqués (décroissant)
+    // 4. Nom de l'équipe (alphabétique, pour départager les égalités parfaites)
+    initialRanking.sort((teamA, teamB) => {
+        if (teamB.points !== teamA.points) return teamB.points - teamA.points;
+        if (teamB.goalDifference !== teamA.goalDifference) return teamB.goalDifference - teamA.goalDifference;
+        if (teamB.goalsFor !== teamA.goalsFor) return teamB.goalsFor - teamA.goalsFor;
+        // En cas d'égalité sur les critères précédents, tri alphabétique par nom.
+        return teamA.name.localeCompare(teamB.name);
     });
 
-    return ranking;
+    return initialRanking;
 }
 
 module.exports = { calculateRanking }; 

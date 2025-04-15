@@ -109,15 +109,13 @@ const generateError = ref('');
 const generateSuccess = ref('');
 
 // États pour la saisie/modification des scores
-const scoresInput = reactive({}); // Stocke les valeurs des inputs { matchId: { score1: 0, score2: 0 } }
+const scoresInput = reactive({}); // Stocke les valeurs des inputs { matchId: { score1: null, score2: null } }
 const editStates = reactive({});   // Stocke si un match est en mode édition { matchId: true/false }
 const loadingStates = reactive({}) // Stocke l'état de chargement par match { matchId: true/false }
-const errorStates = reactive({});   // Stocke les erreurs par match { matchId: "message" }
 
-// États pour le classement (ajoutés)
+// États pour le classement
 const rankingData = ref([]);
 const isLoadingRanking = ref(false);
-const rankingError = ref('');
 
 const tournamentId = computed(() => route.params.id);
 
@@ -138,7 +136,6 @@ const initializeScoreInputs = (matches) => {
         editStates[match.id] = match.scoreTeam1 === null; // Mode édition par défaut si pas de score
     }
     loadingStates[match.id] = false;
-    errorStates[match.id] = '';
   });
 };
 
@@ -154,7 +151,6 @@ const fetchTournamentData = async () => {
     data.matches = data.matches || [];
     tournament.value = data;
     initializeScoreInputs(tournament.value.matches);
-    console.log('[TournamentView] fetchTournamentData successful, calling fetchRanking...');
     await fetchRanking();
   } catch (err) {
     console.error('Erreur de récupération du tournoi :', err);
@@ -184,8 +180,6 @@ const generateMatches = async () => {
         } else {
            await fetchTournamentData(); 
         }
-        generateSuccess.value = data.message || 'Matchs générés avec succès !';
-        console.log('[TournamentView] generateMatches successful, calling fetchRanking...');
         await fetchRanking();
     } catch (err) {
         console.error("Erreur generateMatches:", err);
@@ -205,24 +199,20 @@ const toggleEditScore = (matchId) => {
           score2: match.scoreTeam2 !== null ? match.scoreTeam2 : ''
        }; 
   }
-  errorStates[matchId] = ''; // Clear error on edit
 };
 
 const cancelEdit = (matchId) => {
     editStates[matchId] = false;
-    errorStates[matchId] = ''; // Clear error on cancel
-     // Pas besoin de reset l'input ici car on ne sauvegarde pas
 };
 
 const updateScore = async (match) => {
   const matchId = match.id;
   loadingStates[matchId] = true;
-  errorStates[matchId] = '';
   const scoreData = scoresInput[matchId];
 
   // Vérification simple que les scores sont des nombres
   if (scoreData.score1 === '' || scoreData.score2 === '' || isNaN(Number(scoreData.score1)) || isNaN(Number(scoreData.score2))) {
-      errorStates[matchId] = 'Scores invalides.';
+      console.error(`Scores invalides pour match ${matchId}:`, scoreData);
       loadingStates[matchId] = false;
       return;
   }
@@ -246,12 +236,10 @@ const updateScore = async (match) => {
     match.scoreTeam1 = data.match.scoreTeam1;
     match.scoreTeam2 = data.match.scoreTeam2;
     editStates[matchId] = false; // Sortir du mode édition
-    console.log('[TournamentView] updateScore successful, calling fetchRanking...');
     await fetchRanking();
 
   } catch (err) {
-    console.error("Erreur updateScore:", err);
-    errorStates[matchId] = err.message || 'Erreur sauvegarde.';
+    console.error(`Erreur sauvegarde score match ${matchId}:`, err);
   } finally {
     loadingStates[matchId] = false;
   }
@@ -261,7 +249,6 @@ const fetchRanking = async () => {
     if (!tournamentId.value) return;
     console.log('[Ranking] Attempting to fetch ranking...'); 
     isLoadingRanking.value = true;
-    rankingError.value = '';
     try {
         console.log(`[Ranking] Fetching from: /api/tournaments/${tournamentId.value}/ranking`);
         const res = await fetch(`/api/tournaments/${tournamentId.value}/ranking`);
@@ -272,9 +259,7 @@ const fetchRanking = async () => {
         }
         rankingData.value = await res.json(); // Le backend renvoie directement le tableau
     } catch (err) {
-        console.error("[Ranking] Error in fetchRanking:", err);
-        rankingError.value = err.message;
-        rankingData.value = []; // Vider en cas d'erreur
+        console.error('Erreur de récupération du classement:', err);
     } finally {
         isLoadingRanking.value = false;
     }

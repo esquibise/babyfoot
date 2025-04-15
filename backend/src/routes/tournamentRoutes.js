@@ -7,7 +7,13 @@ const { Op } = require('sequelize'); // Pour les opérations complexes si besoin
 const { calculateRanking } = require('../utils/rankingUtils'); // Importer la fonction
 const router = express.Router();
 
+// --- Routes Tournois ---
 
+/**
+ * POST /tournaments
+ * Crée un nouveau tournoi.
+ * Body: { name: string, date: string, description?: string }
+ */
 router.post('/tournaments', async (req, res) => {
   const { name, date, description } = req.body;
 
@@ -19,24 +25,30 @@ router.post('/tournaments', async (req, res) => {
     const tournament = await Tournament.create({ name, date, description });
     res.status(201).json(tournament);
   } catch (err) {
-    console.error('Erreur lors de la création du tournoi :', err); // ← ici
-    res.status(500).json({ error: 'Erreur serveur lors de la création.' });
+    console.error('Échec de la création du tournoi:', err.message); // Message plus spécifique
+    res.status(500).json({ error: 'Impossible de créer le tournoi.' }); // Message utilisateur plus sobre
   }
 });
 
-// Route GET pour récupérer tous les tournois
-
+/**
+ * GET /tournaments
+ * Récupère la liste de tous les tournois.
+ */
 router.get('/tournaments', async (req, res) => {
   try {
     const tournaments = await Tournament.findAll();
-    console.log(tournaments);  // Affiche les tournois récupérés
     res.json(tournaments);  // Renvoie la réponse
   } catch (err) {
-    res.status(500).json({ error: 'Erreur lors de la récupération des tournois' });
+    console.error('Échec de la récupération des tournois:', err.message);
+    res.status(500).json({ error: 'Impossible de récupérer les tournois.' });
   }
 });
 
-// Récupérer un tournoi par ID (MODIFIÉE pour inclure équipes et matchs)
+/**
+ * GET /tournaments/:id
+ * Récupère un tournoi spécifique par son ID, incluant les équipes et les matchs associés.
+ * Params: :id - ID du tournoi
+ */
 router.get('/tournaments/:id', async (req, res) => {
   try {
     const tournamentId = req.params.id;
@@ -58,13 +70,19 @@ router.get('/tournaments/:id', async (req, res) => {
     }
     res.json(tournament); // Renvoie le tournoi avec ses équipes et matchs
   } catch (err) {
-    console.error('Erreur serveur lors de la récupération du tournoi:', err);
-    res.status(500).json({ error: 'Erreur serveur' });
+    console.error(`Échec de la récupération du tournoi ${req.params.id}:`, err.message);
+    res.status(500).json({ error: 'Impossible de récupérer le tournoi.' });
   }
 });
 
-//POST teams 
+// --- Routes Équipes (associées à un tournoi) ---
 
+/**
+ * POST /tournaments/:id/teams
+ * Ajoute une nouvelle équipe à un tournoi spécifique.
+ * Params: :id - ID du tournoi
+ * Body: { teamName: string }
+ */
 router.post('/tournaments/:id/teams', async (req, res) => {
   const { id } = req.params;
   const { teamName } = req.body;
@@ -84,11 +102,19 @@ router.post('/tournaments/:id/teams', async (req, res) => {
 
     res.status(201).json(team);
   } catch (err) {
-    res.status(500).json({ error: 'Erreur lors de l\'ajout de l\'équipe' });
+    console.error(`Échec de l'ajout de l'équipe au tournoi ${id}:`, err.message);
+    res.status(500).json({ error: 'Impossible d\'ajouter l\'équipe.' }); // Message utilisateur plus sobre
   }
 });
 
-// Nouvelle route pour générer les matchs d'un tournoi
+// --- Routes Matchs (associés à un tournoi) ---
+
+/**
+ * POST /tournaments/:id/generate-matches
+ * Génère les matchs pour un tournoi (système round-robin simple).
+ * Ne génère les matchs que s'il n'en existe pas déjà pour ce tournoi.
+ * Params: :id - ID du tournoi
+ */
 router.post('/tournaments/:id/generate-matches', async (req, res) => {
   const { id } = req.params;
 
@@ -141,12 +167,17 @@ router.post('/tournaments/:id/generate-matches', async (req, res) => {
     res.status(201).json({ message: 'Matchs générés avec succès !', tournament: updatedTournament });
 
   } catch (err) {
-    console.error('Erreur lors de la génération des matchs:', err);
-    res.status(500).json({ error: 'Erreur serveur lors de la génération des matchs.' });
+    console.error(`Échec de la génération des matchs pour le tournoi ${id}:`, err.message);
+    res.status(500).json({ error: 'Impossible de générer les matchs.' });
   }
 });
 
-// Nouvelle route pour mettre à jour le score d'un match
+/**
+ * PUT /matches/:matchId
+ * Met à jour le score d'un match spécifique.
+ * Params: :matchId - ID du match
+ * Body: { scoreTeam1: number, scoreTeam2: number }
+ */
 router.put('/matches/:matchId', async (req, res) => {
   const { matchId } = req.params;
   const { scoreTeam1, scoreTeam2 } = req.body;
@@ -173,12 +204,17 @@ router.put('/matches/:matchId', async (req, res) => {
     res.json({ message: 'Score mis à jour avec succès !', match: match });
 
   } catch (err) {
-    console.error('Erreur lors de la mise à jour du score:', err);
-    res.status(500).json({ error: 'Erreur serveur lors de la mise à jour du score.' });
+    console.error(`Échec de la mise à jour du score pour le match ${matchId}:`, err.message);
+    res.status(500).json({ error: 'Impossible de mettre à jour le score.' });
   }
 });
 
-// Route pour récupérer le classement d'un tournoi (MODIFIÉE)
+/**
+ * GET /tournaments/:id/ranking
+ * Calcule et retourne le classement actuel pour un tournoi spécifique.
+ * Se base sur les matchs dont les scores ont été enregistrés.
+ * Params: :id - ID du tournoi
+ */
 router.get('/tournaments/:id/ranking', async (req, res) => {
   const { id } = req.params;
 
@@ -204,8 +240,8 @@ router.get('/tournaments/:id/ranking', async (req, res) => {
     res.json(ranking); // Renvoie directement le classement calculé
 
   } catch (err) {
-    console.error('Erreur lors de la récupération du classement:', err);
-    res.status(500).json({ error: 'Erreur serveur lors de la récupération du classement.' });
+    console.error(`Échec de la récupération du classement pour le tournoi ${id}:`, err.message);
+    res.status(500).json({ error: 'Impossible de récupérer le classement.' });
   }
 });
 

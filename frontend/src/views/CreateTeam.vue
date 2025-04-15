@@ -10,8 +10,7 @@
         <p v-if="!tournamentId" class="error-message">ID du tournoi manquant.</p>
       </form>
        <!-- Ajouter des messages de succès/erreur ici -->
-       <p v-if="successMsg" class="success-message">{{ successMsg }}</p>
-       <p v-if="errorMsg" class="error-message">{{ errorMsg }}</p>
+       <p v-if="errorMsg && !tournamentId" class="error-message">{{ errorMsg }}</p>
     </div>
   </template>
   
@@ -34,15 +33,12 @@
   const router = useRouter(); // Initialiser le routeur
   
   const addTeam = async () => {
-    successMsg.value = '';
-    errorMsg.value = '';
-
     if (!tournamentId.value) {
         errorMsg.value = "ID du tournoi non spécifié.";
         return;
     }
     if (!teamName.value.trim()) { // Validation simple du nom
-        errorMsg.value = "Le nom de l'équipe ne peut pas être vide.";
+        console.error("Le nom de l'équipe ne peut pas être vide.");
         return;
     }
 
@@ -69,7 +65,6 @@
     } catch (error) {
         console.error("Error adding team:", error);
         // Afficher l'erreur dans le message dédié
-        errorMsg.value = error.message || 'Une erreur inconnue est survenue.'; 
     }
   };
   </script>
@@ -126,6 +121,6 @@
   background-color: #1565c0;
 }
 
-/* Ajouter des styles pour les messages de succès/erreur ici si implémentés */
+/* Styles pour success-message et error-message supprimés si plus utilisés explicitement */
 
 </style>

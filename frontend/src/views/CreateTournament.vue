@@ -20,8 +20,7 @@
         <button type="submit" class="btn btn-submit btn-primary">Créer</button>
       </form>
   
-      <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
-      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+      <!-- Messages de succès/erreur supprimés de l'UI -->
     </div>
   </template>
   
@@ -32,13 +31,9 @@
   const name = ref('');
   const date = ref('');
   const description = ref('');
-  const successMessage = ref('');
-  const errorMessage = ref('');
   const router = useRouter();
   
   const handleSubmit = async () => {
-    errorMessage.value = ''; // Reset errors
-    successMessage.value = '';
     try {
       const res = await fetch('/api/tournaments', {
         method: 'POST',
@@ -56,7 +51,6 @@
       }
   
       const data = await res.json();
-      successMessage.value = `Tournoi "${data.name}" créé avec succès !`;
       name.value = ''; // Clear form
       date.value = '';
       description.value = '';
@@ -67,7 +61,7 @@
       }, 1500);
     } catch (err) {
       console.error("Submit error:", err);
-      errorMessage.value = err.message || 'Impossible de créer le tournoi.';
+      // L'erreur est logguée, mais pas affichée directement à l'utilisateur
     }
   };
   </script>
@@ -147,26 +141,6 @@
 
 .btn-primary:hover {
   background-color: #b71c1c;
-}
-
-.success-message {
-  margin-top: 20px;
-  color: #2e7d32; /* Vert */
-  background-color: #e8f5e9;
-  padding: 10px;
-  border-radius: 4px;
-  border-left: 4px solid #2e7d32;
-  text-align: center;
-}
-
-.error-message {
-  margin-top: 20px;
-  color: #c62828; /* Rouge */
-  background-color: #ffebee;
-  padding: 10px;
-  border-radius: 4px;
-  border-left: 4px solid #c62828;
-  text-align: center;
 }
 </style>
   
