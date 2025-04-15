@@ -1,34 +1,125 @@
 <template>
-    <div class="container mx-auto p-6 bg-white rounded-lg shadow-md max-w-md">
-      <h2 class="text-2xl font-bold mb-6 text-gray-800">Ajouter une équipe au tournoi</h2>
-      <form @submit.prevent="addTeam" class="space-y-4">
-        <div>
-          <label for="teamName" class="block text-sm font-medium text-gray-700 mb-1">Nom de l'équipe :</label>
-          <input v-model="teamName" id="teamName" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+    <div class="view-container form-container team-form-container">
+      <h2 class="view-title form-title">Ajouter une équipe au tournoi</h2>
+      <form @submit.prevent="addTeam" class="team-form">
+        <div class="form-group">
+          <label for="teamName" class="form-label">Nom de l'équipe :</label>
+          <input v-model="teamName" id="teamName" required class="form-input" />
         </div>
-        <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150">Ajouter l'équipe</button>
+        <button type="submit" class="btn btn-submit btn-secondary" :disabled="!tournamentId">Ajouter l'équipe</button>
+        <p v-if="!tournamentId" class="error-message">ID du tournoi manquant.</p>
       </form>
+       <!-- Ajouter des messages de succès/erreur ici -->
+       <p v-if="successMsg" class="success-message">{{ successMsg }}</p>
+       <p v-if="errorMsg" class="error-message">{{ errorMsg }}</p>
     </div>
   </template>
   
   <script setup>
-  import { ref } from 'vue';
+  import { ref, defineProps } from 'vue';
+  import { useRouter } from 'vue-router'; // Importer pour la redirection
+  
+  // Récupérer l'ID du tournoi passé en prop par le routeur
+  const props = defineProps({
+    id: { // Doit correspondre au nom du paramètre dans la route (:id)
+      type: [String, Number],
+      required: true
+    }
+  });
   
   const teamName = ref('');
-  const tournamentId = 1; // Remplacer par l'ID du tournoi
+  const tournamentId = ref(props.id); // Utiliser la prop
+  const successMsg = ref('');
+  const errorMsg = ref('');
+  const router = useRouter(); // Initialiser le routeur
   
   const addTeam = async () => {
-    const res = await fetch(`http://localhost:3001/api/tournaments/${tournamentId}/teams`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ teamName: teamName.value }),
-    });
-  
-    if (res.ok) {
-      alert('Équipe ajoutée !');
-    } else {
-      alert('Erreur lors de l\'ajout de l\'équipe.');
+    successMsg.value = '';
+    errorMsg.value = '';
+
+    if (!tournamentId.value) {
+        errorMsg.value = "ID du tournoi non spécifié.";
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/tournaments/${tournamentId.value}/teams`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ teamName: teamName.value }),
+        });
+    
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error(data.error || 'Erreur lors de l\'ajout de l\'équipe.');
+        }
+        
+        successMsg.value = `Équipe "${teamName.value}" ajoutée avec succès !`;
+        teamName.value = ''; // Vider le champ
+        // Optionnel : Rediriger vers la vue du tournoi après un délai
+        setTimeout(() => {
+           router.push({ name: 'TournamentView', params: { id: tournamentId.value } });
+        }, 1500);
+
+    } catch (error) {
+        console.error("Error adding team:", error);
+        errorMsg.value = error.message || 'Erreur lors de l\'ajout de l\'équipe.';
     }
   };
   </script>
-  
+
+<style scoped>
+/* Retirer .form-container et .form-title */
+/* Affiner titre spécifique */
+.form-title {
+    font-size: 1.9rem; /* Ajuster taille pour H2 */
+}
+
+/* Garder styles formulaire spécifiques */
+.team-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.form-input {
+  padding: 12px 15px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  background-color: #fdfdfd;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+  background-color: #fff;
+  transform: scale(1.0);
+}
+
+/* Styles spécifiques bouton */
+.btn-secondary {
+  background-color: #1976d2; /* Bleu */
+  color: white;
+}
+.btn-secondary:hover {
+  background-color: #1565c0;
+}
+
+/* Ajouter des styles pour les messages de succès/erreur ici si implémentés */
+
+</style>

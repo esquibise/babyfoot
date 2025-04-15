@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend # Chemin vers le dossier backend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001" # Expose le port 3001 du conteneur sur le port 3001 de l'hôte
+    volumes:
+      # Monter la base de données pour la persistance
+      # Note: Le chemin exact peut dépendre de l'endroit où Sequelize crée la BDD
+      - ./backend/database.sqlite:/app/backend/database.sqlite 
+      # Monter le code source pour le développement (optionnel, commenter pour prod)
+      # - ./backend:/app/backend 
+    environment:
+      # Définir les variables d'environnement si nécessaire (ex: BDD_URL)
+      NODE_ENV: production # Ou development si on monte le volume
+    # networks: # Décommentez si vous avez besoin de réseaux spécifiques
+    #   - app-network
+
+  frontend:
+    build:
+      context: ./frontend # Chemin vers le dossier frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80" # Expose le port 80 (nginx) du conteneur sur le port 8080 de l'hôte
+    depends_on:
+      - backend # S'assurer que le backend démarre avant (pas une garantie totale)
+    # networks:
+    #   - app-network
+
+# networks: # Décommentez si vous avez besoin de réseaux spécifiques
+#   app-network:
+#     driver: bridge 

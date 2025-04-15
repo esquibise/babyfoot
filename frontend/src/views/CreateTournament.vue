@@ -1,27 +1,27 @@
 <template>
-    <div class="container mx-auto p-6 bg-white rounded-lg shadow-md max-w-lg">
-      <h1 class="text-3xl font-bold mb-6 text-gray-800">Créer un tournoi</h1>
-      <form @submit.prevent="handleSubmit" class="space-y-4">
-        <div>
-          <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nom :</label>
-          <input v-model="name" id="name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+    <div class="view-container form-container">
+      <h1 class="view-title">Créer un tournoi</h1>
+      <form @submit.prevent="handleSubmit" class="tournament-form">
+        <div class="form-group">
+          <label for="name" class="form-label">Nom :</label>
+          <input v-model="name" id="name" required class="form-input" />
         </div>
   
-        <div>
-          <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Date :</label>
-          <input v-model="date" id="date" type="date" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+        <div class="form-group">
+          <label for="date" class="form-label">Date :</label>
+          <input v-model="date" id="date" type="date" required class="form-input" />
         </div>
   
-        <div>
-          <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description :</label>
-          <textarea v-model="description" id="description" rows="3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+        <div class="form-group">
+          <label for="description" class="form-label">Description :</label>
+          <textarea v-model="description" id="description" rows="4" class="form-textarea" />
         </div>
   
-        <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150">Créer</button>
+        <button type="submit" class="btn btn-submit btn-primary">Créer</button>
       </form>
   
-      <p v-if="successMessage" class="mt-4 text-green-600">{{ successMessage }}</p>
-      <p v-if="errorMessage" class="mt-4 text-red-600">{{ errorMessage }}</p>
+      <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </div>
   </template>
   
@@ -37,8 +37,10 @@
   const router = useRouter();
   
   const handleSubmit = async () => {
+    errorMessage.value = ''; // Reset errors
+    successMessage.value = '';
     try {
-      const res = await fetch('http://localhost:3001/api/tournaments', {
+      const res = await fetch('/api/tournaments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -48,22 +50,123 @@
         })
       });
   
-      if (!res.ok) throw new Error('Erreur API');
+      if (!res.ok) {
+          const errorData = await res.json().catch(() => ({ message: 'Erreur inconnue' }));
+          throw new Error(errorData.message || 'Erreur lors de la création du tournoi.');
+      }
   
       const data = await res.json();
       successMessage.value = `Tournoi "${data.name}" créé avec succès !`;
+      name.value = ''; // Clear form
+      date.value = '';
+      description.value = '';
   
-      // Optionnel : redirection vers l'accueil après 1s
+      // Optionnel : redirection vers l'accueil après 1.5s
       setTimeout(() => {
         router.push('/');
-      }, 1000);
+      }, 1500);
     } catch (err) {
-      errorMessage.value = 'Impossible de créer le tournoi.';
+      console.error("Submit error:", err);
+      errorMessage.value = err.message || 'Impossible de créer le tournoi.';
     }
   };
   </script>
   
-  <style scoped>
-  /* Supprimer tout le contenu ici */
-  </style>
+<style scoped>
+.tournament-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px; /* Plus d'espace */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.form-input,
+.form-textarea {
+  padding: 12px 15px; /* Plus de padding */
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  background-color: #fdfdfd;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+  background-color: #fff;
+  transform: scale(1.0); /* Pas de scale ici, peut-être gênant */
+}
+
+/* Style de base pour les boutons (partagé potentiel) */
+.btn {
+  display: inline-block;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn-submit {
+  background-color: #d32f2f; /* Bouton ROUGE */
+  color: white;
+  align-self: center; /* Centrer le bouton */
+  margin-top: 10px;
+}
+
+.btn-submit:hover {
+  background-color: #b71c1c; /* Rouge plus foncé */
+}
+
+.btn-primary {
+  background-color: #d32f2f; /* Rouge */
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #b71c1c;
+}
+
+.success-message {
+  margin-top: 20px;
+  color: #2e7d32; /* Vert */
+  background-color: #e8f5e9;
+  padding: 10px;
+  border-radius: 4px;
+  border-left: 4px solid #2e7d32;
+  text-align: center;
+}
+
+.error-message {
+  margin-top: 20px;
+  color: #c62828; /* Rouge */
+  background-color: #ffebee;
+  padding: 10px;
+  border-radius: 4px;
+  border-left: 4px solid #c62828;
+  text-align: center;
+}
+</style>
   
