@@ -41,29 +41,35 @@
         errorMsg.value = "ID du tournoi non spécifié.";
         return;
     }
+    if (!teamName.value.trim()) { // Validation simple du nom
+        errorMsg.value = "Le nom de l'équipe ne peut pas être vide.";
+        return;
+    }
 
     try {
         const res = await fetch(`/api/tournaments/${tournamentId.value}/teams`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ teamName: teamName.value }),
+          body: JSON.stringify({ teamName: teamName.value.trim() }), // Utiliser trim()
         });
     
         const data = await res.json();
         if (!res.ok) {
-            throw new Error(data.error || 'Erreur lors de l\'ajout de l\'équipe.');
+            // Essayer d'extraire un message d'erreur plus précis du backend
+            throw new Error(data.error || `Erreur ${res.status} lors de l'ajout.`);
         }
         
-        successMsg.value = `Équipe "${teamName.value}" ajoutée avec succès !`;
+        successMsg.value = `Équipe "${teamName.value.trim()}" ajoutée avec succès !`;
         teamName.value = ''; // Vider le champ
-        // Optionnel : Rediriger vers la vue du tournoi après un délai
+        
         setTimeout(() => {
            router.push({ name: 'TournamentView', params: { id: tournamentId.value } });
         }, 1500);
 
     } catch (error) {
         console.error("Error adding team:", error);
-        errorMsg.value = error.message || 'Erreur lors de l\'ajout de l\'équipe.';
+        // Afficher l'erreur dans le message dédié
+        errorMsg.value = error.message || 'Une erreur inconnue est survenue.'; 
     }
   };
   </script>
