@@ -1,26 +1,30 @@
 <template>
-    <div v-if="tournament">
-      <h1>{{ tournament.name }}</h1>
-      <p><strong>Date :</strong> {{ formatDate(tournament.date) }}</p>
-      <p><strong>Description :</strong> {{ tournament.description }}</p>
+    <div v-if="tournament" class="container mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h1 class="text-3xl font-bold mb-4 text-gray-800">{{ tournament.name }}</h1>
+      <p class="mb-2 text-gray-600"><strong>Date :</strong> {{ formatDate(tournament.date) }}</p>
+      <p class="mb-6 text-gray-600"><strong>Description :</strong> {{ tournament.description || 'Non fournie' }}</p>
   
-      <h2>Équipes</h2>
-      <ul v-if="tournament.teams && tournament.teams.length">
-        <li v-for="(team, index) in tournament.teams" :key="index">{{ team }}</li>
-      </ul>
-      <p v-else>Aucune équipe inscrite.</p>
-  
-      <h2>Matchs</h2>
-      <ul v-if="tournament.matches && tournament.matches.length">
-        <li v-for="(match, index) in tournament.matches" :key="index">
-          {{ match.team1 }} vs {{ match.team2 }} 
-          <span v-if="match.scoreTeam1 != null"> → {{ match.scoreTeam1 }} - {{ match.scoreTeam2 }}</span>
-        </li>
-      </ul>
-      <p v-else>Aucun match encore généré.</p>
+      <div class="mb-6">
+        <h2 class="text-2xl font-semibold mb-3 text-gray-700">Équipes</h2>
+        <ul v-if="tournament.teams && tournament.teams.length" class="space-y-2">
+          <li v-for="(team, index) in tournament.teams" :key="index" class="p-2 bg-gray-50 rounded">{{ team }}</li>
+        </ul>
+        <p v-else class="text-gray-500">Aucune équipe inscrite.</p>
+      </div>
+
+      <div>
+        <h2 class="text-2xl font-semibold mb-3 text-gray-700">Matchs</h2>
+        <ul v-if="tournament.matches && tournament.matches.length" class="space-y-2">
+          <li v-for="(match, index) in tournament.matches" :key="index" class="p-2 bg-gray-50 rounded">
+            {{ match.team1 }} vs {{ match.team2 }}
+            <span v-if="match.scoreTeam1 != null" class="font-semibold"> → {{ match.scoreTeam1 }} - {{ match.scoreTeam2 }}</span>
+          </li>
+        </ul>
+        <p v-else class="text-gray-500">Aucun match encore généré.</p>
+      </div>
     </div>
-    <div v-else>
-      <p>Chargement...</p>
+    <div v-else class="text-center p-10">
+      <p class="text-gray-500">Chargement...</p>
     </div>
   </template>
   
