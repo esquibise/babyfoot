@@ -1,0 +1,50 @@
+/* src/assets/style.css */
+
+/* Style général de la page */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9; /* Fond gris clair */
+  }
+  
+  #app {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  /* Style pour les titres */
+  h1, h2, h3 {
+    color: #333;
+    font-weight: bold;
+  }
+  
+  h1 {
+    margin-bottom: 20px;
+  }
+  
+  /* Style pour les listes */
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  
+  li {
+    background-color: #fff;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Style pour les liens */
+  a {
+    text-decoration: none;
+    color: #007bff;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
