@@ -1,32 +1,33 @@
 # Gestionnaire de Tournois de Baby-Foot
 
-## 🎯 Objectif
+##  Objectif
 
-Application web permettant de créer et gérer des tournois de baby-foot, d'ajouter des équipes, de générer des matchs, d'enregistrer les scores et de visualiser le classement.
+Bienvenue sur votre application web de gestion de tournois de baby-foot ! Cette plateforme permet de :
 
-## 🛠️ Prérequis
+Créer des tournois (nom, date, description),
+
+Ajouter des équipes,
+
+Générer les matchs automatiquement,
+
+Enregistrer les scores,
+
+Et consulter un classement mis à jour en temps réel.
+
+Le tout dans une interface simple et efficace.
+
+##  Prérequis
 
 *   Node.js (version 18 LTS recommandée)
 *   npm (généralement inclus avec Node.js)
 *   Docker et Docker Compose (pour l'exécution conteneurisée)
 
-## 🚀 Installation et Lancement
+##  Installation et Lancement
 
 Vous pouvez lancer l'application de deux manières :
 
-### 1. Lancement Local (sans Docker)
 
-*   **Backend :**
-    1.  Naviguez dans le dossier `backend` : `cd backend`
-    2.  Installez les dépendances : `npm install`
-    3.  Lancez le serveur backend : `node src/index.js` (Il écoutera sur `http://localhost:3001`)
-*   **Frontend :**
-    1.  Ouvrez un **autre** terminal et naviguez dans le dossier `frontend` : `cd frontend`
-    2.  Installez les dépendances : `npm install`
-    3.  Lancez le serveur de développement frontend : `npm run dev`
-    4.  Ouvrez votre navigateur et allez à l'URL indiquée par Vite (généralement `http://localhost:5173` ou similaire).
-
-### 2. Lancement avec Docker (Recommandé)
+### 1. Lancement avec Docker
 
 1.  Assurez-vous que Docker et Docker Compose sont installés et en cours d'exécution.
 2.  Ouvrez un terminal à la **racine du projet** (le dossier `babyfoot`).
@@ -36,7 +37,21 @@ Vous pouvez lancer l'application de deux manières :
 
 Pour arrêter les conteneurs Docker, retournez dans le terminal où `docker-compose up` est lancé et faites `Ctrl+C`.
 
-## 📁 Structure du Projet
+### 2. Lancement Local
+
+*   **Backend :**
+    1.  Naviguez dans le dossier `backend` : `cd backend`
+    2.  Installez les dépendances : `npm install`
+    3.  Lancez le serveur backend : `node src/index.js` 
+
+*   **Frontend :**
+    1.  Ouvrez un autre terminal et naviguez dans le dossier `frontend` : `cd frontend`
+    2.  Installez les dépendances : `npm install`
+    3.  Lancez le serveur de développement frontend : `npm run dev`
+    4.  Ouvrez votre navigateur et allez à l'URL indiquée par Vite .
+
+
+## Structure du Projet
 
 ```
 /babyfoot
@@ -55,7 +70,7 @@ Pour arrêter les conteneurs Docker, retournez dans le terminal où `docker-comp
 └── README.md        # Ce fichier
 ```
 
-## ✨ Fonctionnalités Implémentées
+## fOnctionnalités Implémentées
 
 *   Création de nouveaux tournois (nom, date, description).
 *   Liste des tournois existants.
@@ -67,3 +82,4 @@ Pour arrêter les conteneurs Docker, retournez dans le terminal où `docker-comp
 *   Interface utilisateur basique mais fonctionnelle avec Vue 3.
 *   API backend simple avec Node.js, Express, Sequelize et SQLite.
 *   Configuration Docker pour un déploiement/lancement simplifié.
+*   Tests unitaires
